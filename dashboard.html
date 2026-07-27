@@ -1,0 +1,84 @@
+# SPEND LEDGER
+
+The revenue side of this program has a daily history. The spend side did not, which meant every
+question about whether money was working got answered from whatever window happened to be in front
+of us. This file fixes that. Two ledgers, one derived view.
+
+## The two ledgers
+
+**`data/ads_daily.csv`** - one row per date per campaign. Append-only. Cost, impressions, clicks,
+CTR, average CPC, and conversions split by action. Cost settles within about a day, so it is pulled
+**every run**, not just on sweep runs. Conversions carry a `settled_as_of` date and a
+`restated_from` value when a later pull revises them.
+
+**`data/budget_changes.csv`** - the change-point ledger. Every budget, bidding, geo, schedule,
+status, or asset change, with who made it. This is what turns a flat spend series into comparable
+regimes. Rows carry a `confidence` field: `confirmed` means it appears in a session log with a
+date, `inferred` means the value is known but the exact change date is not.
+
+The `source` field matters as much as the value. `Arda` is a decision. `Google` is something that
+happened to the account. `Billing` is an outage. In April, Google added 11 sitelinks on its own and
+about $914 went out the door before they were removed. That belongs in the same ledger as a
+deliberate budget increase, because from the revenue side it is indistinguishable.
+
+## Budget is not spend
+
+Never report budget as if it were spend. Google over-delivers against a daily budget and settles
+against a monthly average. Boxx has run over budget repeatedly: May 2 spent $55.55 against a $45
+budget, May 5 spent $54.76. Both figures belong in the record.
+
+Every run reports **budgeted daily** and **actual spend** side by side, plus the delivery ratio.
+A campaign persistently under-delivering is a different problem from one persistently over-
+delivering, and both are invisible if you only look at the budget field.
+
+## The derived view: spend regimes
+
+A **regime** is the span between two change points for a campaign, or account-wide between two
+account-level change points. For each regime, compute and carry forward:
+
+| Field | Definition |
+|---|---|
+| Regime start, end, days | bounded by change points, outages break a regime |
+| Budgeted daily, total budgeted | from the change ledger |
+| Actual spend, spend per day | from `ads_daily.csv` |
+| Delivery ratio | actual spend / budgeted |
+| Daytime tx per day | day-of-week matched where the regime is shorter than three weeks |
+| Net sales per day | Square |
+| Ad cost as percent of net sales | the number that tells you whether this is affordable |
+| Cost per transaction at the margin | change in spend per day divided by change in tx per day against the prior clean regime |
+| Clean | true only if the regime overlaps no row in `CONTAMINATION_LOG.md` |
+
+Report the regime table every run. It is short, it accumulates, and it is the only artifact that
+answers "did spending more ever produce more."
+
+## The honest caveat, which must appear beside the regime table every time
+
+Cost per marginal transaction computed this way is **not incrementality**. It is a before-and-after
+across a change point, and this business has already demonstrated why that is weak evidence: the
+Jun 5 to 10 suspension put spend at zero and daytime transactions barely moved, ads-on 215.8
+against ads-off 218.8. Accumulated audience effects persist after spend stops.
+
+So the regime table answers a narrower question honestly: **at each level of spend we have tried,
+what did the business actually do.** Treat a favourable marginal cost as a reason to test further,
+never as proof the spend caused the revenue. If a regime is not `clean`, say so in the same
+sentence as the number.
+
+## Program to date
+
+Carry three cumulative figures in `state.json` and show them every run:
+
+- Total ad spend since 2026-03-21
+- Total spend by campaign, including campaigns now paused or divested
+- Ad cost as a percent of net sales across the whole program
+
+The last one is the number that matters at partner level. Mert and Altug are not going to read a
+trigger table, and the program has now been running long enough that "what has this cost and what
+came back" deserves a standing answer rather than a reconstruction each time it is asked.
+
+## What this cannot tell you
+
+None of this establishes causation, and no amount of accumulated daily data will. The only path to
+real verification of in-store sales against ad spend is a **Store Sales offline conversion import**,
+uploading Square transactions back to Google Ads. That remains a project, not a task, and it stays
+in `state.json > known_blockers` until it is scoped. The ledger is the best available substitute
+in the meantime, and it should describe itself that way in every output.

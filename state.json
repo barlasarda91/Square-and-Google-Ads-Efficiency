@@ -1,0 +1,47 @@
+# CONTAMINATION LOG
+
+Any window overlapping a row below is not a clean comparison window. Check this file before every
+period comparison. **Append new events as you find them** (holiday, viral moment, reduced hours,
+outage, weather, competitor action, equipment failure, staffing gap).
+
+Format: `| start | end | type | effect | notes |`
+
+| Start | End | Type | Effect on data | Notes |
+|---|---|---|---|---|
+| 2026-03-21 | ongoing | campaign launch | ads begin | Campaign 1 and original PMax go live |
+| 2026-04-16 | ongoing | new service | night stream begins | Night at Boxx launches |
+| 2026-05-25 | 2026-05-25 | holiday | inflates base week | Memorial Day. Flattered the +12% WoW read in the May 28 session. |
+| 2026-06-05 | 2026-06-10 | outage | all ads off | Full Google Ads account suspension, Merchant Center / Moccamaster counterfeit flag. Daytime 232.7/day. This is a floor, not a counterfactual. |
+| 2026-06-15 | 2026-06-21 | reduced hours | severe depression | Reduced-hours competition week. Daytime cratered to 171.3/day. Exclude from every comparison. Self-inflicted. |
+| 2026-07-02 | ongoing | product launch | raises DTC and mix | Competition Coffees released |
+| 2026-07-04 | 2026-07-04 | holiday | depresses count | Daytime 155 |
+| 2026-07-05 | 2026-07-09 | viral | inflates DTC sharply | Instagram post featuring Competition Coffees. DTC $71/day pre, $241/day peak (3.4x), tail ~$78. ~$1,200 incremental over 11 days. Contaminates Jul 8-15 as an ads-off baseline. |
+| 2026-07-07 | 2026-07-15 | outage | all ads off | Billing failure stopped all campaigns. Resumed Jul 16. |
+| 2026-07-16 | 2026-07-16 | settings change | new spend regime begins | Budget reallocation applied: C1 $45 to $20 and Downtown-only, Night $15 to $1, PMax $20 to $40 phased to $60. Any comparison spanning this date is not like-for-like. |
+
+## Weekly reference profile (use for day-matching)
+
+Weekdays run roughly 200-220 daytime transactions. Saturday runs 256-270. Sunday sits between.
+A change that only shows up in a raw seven-day mean, and disappears under day-of-week matching,
+is a calendar artifact and must be reported as such.
+
+## Known weekly averages, daytime 7AM-6PM
+
+| Window | tx/day | Note |
+|---|---|---|
+| 2026-03-02 to 03-15 | ~233 | pre-campaign baseline, closest thing to a true zero |
+| April 2026 | 234.5 | full month |
+| 2026-04-06 to 04-12 | ~246 | campaign peak |
+| 2026-05-08 to 05-14 | 212.1 | trough |
+| 2026-05-28 to 06-01 | 242.2 | peak, PMax ramp, contains Memorial Day |
+| 2026-06-05 to 06-10 | 232.7 | suspension floor |
+| 2026-06-11 to 06-14 | 237.2 | reinstatement bounce |
+| 2026-06-15 to 06-21 | 171.3 | reduced hours, exclude |
+| 2026-06-22 to 06-28 | 213.6 | |
+| 2026-06-29 to 07-05 | 204.1 | contains Jul 4 |
+| 2026-07-06 to 07-12 | 223.7 | viral tail |
+| 2026-07-13 to 07-15 | 204.0 | partial |
+
+Ads-on average Jun 11 to Jul 6 excluding the reduced-hours week: **215.8**.
+Ads-off average Jul 8 to Jul 15: **218.8**.
+The business is inelastic to ad spend at current levels. This is the central finding.
